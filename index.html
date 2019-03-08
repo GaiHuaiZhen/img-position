@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>功能测试</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+    <script>
+        !function (win, option) {
+                var count = 0,
+                    designWidth = option.designWidth,
+                    designHeight = option.designHeight || 0,
+                    designFontSize = option.designFontSize || 20,
+                    callback = option.callback || null,
+                    root = document.documentElement,
+                    body = document.body,
+                    rootWidth, newSize, t, self;
+
+                root.style.width = '100%';
+
+                //返回root元素字体计算结果
+                function _getNewFontSize() {
+                    var scale = designHeight !== 0 ? Math.min(win.innerWidth / designWidth, win.innerHeight / designHeight) : win.innerWidth / designWidth;
+                    return parseInt(scale * 10000 * designFontSize) / 10000;
+                };
+                !function () {
+                    rootWidth = root.getBoundingClientRect().width;
+                    // self = self ? self : arguments.callee;
+                    //如果此时屏幕宽度不准确，就尝试再次获取分辨率，只尝试20次，否则使用win.innerWidth计算
+                    if (rootWidth !== win.innerWidth && count < 20) {
+                        win.setTimeout(function () {
+                            count++;
+                        }, 0);
+                    } else {
+                        newSize = _getNewFontSize();
+                        if (newSize == 0 && count < 30) {
+                            win.setTimeout(function () {
+                                count++;
+                            }, 0);
+                            return false;
+                        }
+                        //如果css已经兼容当前分辨率就不管了
+                        if (newSize + 'px' !== getComputedStyle(root)['font-size'] && newSize != 0) {
+                            root.style.fontSize = newSize + "px";
+                            win.remSize = newSize;
+                            return callback && callback(newSize);
+                        };
+                    };
+                }();
+                //横竖屏切换的时候改变fontSize，根据需要选择使用
+                win.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", function () {
+                    clearTimeout(t);
+                    t = setTimeout(function () {
+                    }, 300);
+                }, false);
+            }(window, {
+                designWidth: 720,
+                designFontSize: 100,
+                callback: function (argument) {
+                }
+            });
+
+    </script>
+    <style type="text/css">
+    body,html{
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        
+    }
+    div{
+         width: 6rem;
+        height: 10rem;
+        
+        border: 1px solid #000;
+        margin-top: .5rem;
+        position: relative;
+        border-radius: .2rem;
+        background: url('') no-repeat;
+        background: red;
+        overflow: hidden;
+    }
+    img{
+        width: 6rem;
+        height: 10rem;
+ 
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: .2rem;
+       
+        
+
+    }
+    span{
+        display: block;
+        position: absolute;
+        left: .3rem;
+        top: .2rem;
+        width: 1rem;
+        height: 3rem;
+        background: #666;
+        font-size: 24px;
+        z-index: 10;
+        border-radius: .3rem;
+
+    }
+    </style>
+</head>
+<body>
+    <div id="" >
+        <img id="box" src="" alt="">
+        <span>摄像头</span>
+    </div>
+    <input onchange='aa(this)' type="file">
+    
+    
+</body>
+</html>
+<script>
+   function aa(obj){
+       // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+    //  
+   var newsrc = getObjectURL(obj.files[0]);
+   console.log(newsrc)
+   document.getElementById('box').src = newsrc 
+    console.log()
+    }
+       function getObjectURL(file) {
+            var url = null;
+            // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+            if (window.createObjectURL != undefined) { // basic
+                url = window.createObjectURL(file);
+            } else if (window.URL != undefined) { // mozilla(firefox)
+                url = window.URL.createObjectURL(file);
+            } else if (window.webkitURL != undefined) { // webkit or chrome
+                url = window.webkitURL.createObjectURL(file);
+            }
+            return url;
+        }
+
+
+        function a2d(n) {
+                return n * 180 / Math.PI;
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                var oDiv = document.querySelector('#box');
+
+                var x = 0;
+                var y = 0;
+                var d = 0;
+                var s = 1;
+
+                oDiv.addEventListener('touchstart', function (ev) {
+                    var oldX = x;
+                    var oldY = y;
+                    var oldD = d;
+                    var oldS = s;
+
+                    function getT(ev) {
+                        var x1 = ev.targetTouches[0].pageX;
+                        var y1 = ev.targetTouches[0].pageY;
+
+                        var x2 = ev.targetTouches[1].pageX;
+                        var y2 = ev.targetTouches[1].pageY;
+
+                        var x = (x1 + x2) / 2;
+                        var y = (y1 + y2) / 2;
+
+                        return { x: x, y: y };
+                    }
+                    function getD(ev) {
+                        var x1 = ev.targetTouches[0].pageX;
+                        var y1 = ev.targetTouches[0].pageY;
+
+                        var x2 = ev.targetTouches[1].pageX;
+                        var y2 = ev.targetTouches[1].pageY;
+
+                        var x = x2 - x1;
+                        var y = y1 - y2;
+
+                        return a2d(Math.atan2(y, x));
+                    }
+                    function getS(ev) {
+                        var x1 = ev.targetTouches[0].pageX;
+                        var y1 = ev.targetTouches[0].pageY;
+
+                        var x2 = ev.targetTouches[1].pageX;
+                        var y2 = ev.targetTouches[1].pageY;
+
+                        var a = x1 - x2;
+                        var b = y1 - y2;
+                        return Math.sqrt(a * a + b * b);
+                    }
+
+
+
+                    if (ev.targetTouches.length == 2) {
+                        var downX = getT(ev).x;
+                        var downY = getT(ev).y;
+                        var downD = getD(ev);
+                        var downS = getS(ev);
+                    }
+
+                    document.addEventListener('touchmove', function (ev) {
+                        if (ev.targetTouches.length == 2) {
+                            x = oldX + getT(ev).x - downX;
+                            y = oldY + getT(ev).y - downY;
+                            d = oldD + downD - getD(ev);
+                            s = oldS * getS(ev) / downS;
+
+                            oDiv.style.WebkitTransform = 'translate(' + x + 'px,' + y + 'px) scale(' + s + ') rotate(' + d + 'deg)';
+                        }
+                    }, false);
+
+                    ev.preventDefault();
+                }, false);
+            }, false);
+</script>
